@@ -43,7 +43,7 @@ export default function Welcome() {
         height={140}
         className="mb-6"
       />
-      <h1 className="text-4xl font-bold mb-2">Welcome to NodeBook</h1>
+      <h1 className="text-4xl font-bold mb-2">Welcome to Weblink</h1>
       <p className="text-gray-300 mb-6">All your links, linked.</p>
 
       <Button className="py-2 px-8" onClick={() => setOpen(true)}>Start</Button>
