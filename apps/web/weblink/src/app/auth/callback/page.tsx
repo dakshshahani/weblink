@@ -8,18 +8,21 @@ export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    const processLogin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (session) {
-        console.log("Logged in user:", session.user);
-        router.push("/");
+        console.log("✅ Logged in user:", session.user);
+        router.push("/dashboard");
       } else {
-        console.log("No session found");
+        console.warn("⚠️ No session found");
+        router.push("/");
       }
     };
 
-    processLogin();
+    checkSession();
   }, [router]);
 
   return <p>Redirecting...</p>;

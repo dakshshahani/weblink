@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { handleGoogleOAuth } from "@/lib/supabaseAuth";
 
 import {
   Dialog,
@@ -46,7 +47,7 @@ export default function Welcome() {
       />
       <h1 className="text-4xl font-bold mb-2">Welcome to Weblink</h1>
       <p className="text-gray-300 mb-6">All your links, linked.</p>
-      <Button className="py-2 px-8" onClick={() => setOpen(true)}> Start linking with  <Image src="/google.svg" alt="google" width={15} height={15} /></Button>
+      <Button className="py-2 px-8" onClick={handleGoogleOAuth}> Start linking with  <Image src="/google.svg" alt="google" width={15} height={15} /></Button>
       </div>
   );
 }
