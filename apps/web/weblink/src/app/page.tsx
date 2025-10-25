@@ -1,12 +1,13 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Welcome from "@/components/welcome";
 import BackgroundGlow from "@/components/ui/BackgroundGlow";
 
 export default function Home() {
   return (
-    <BackgroundGlow intensity={99}>
-      <Button>Click Me</Button>
+    <BackgroundGlow intensity={100}>
+        <Welcome />
     </BackgroundGlow>
 
     // <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
