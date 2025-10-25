@@ -11,6 +11,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "vite": "^7.1.12"
   },
   "devDependencies": {
