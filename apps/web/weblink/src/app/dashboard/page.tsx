@@ -2,15 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
-import {
-  Sidebar,
-  SidebarProvider,
-  SidebarFooter,
-  SidebarTrigger,
-  SidebarHeader,
-  SidebarContent,
-  SidebarGroup,
-} from "@/components/ui/sidebar";
+import { SidebarPanel } from "@/components/SidebarPanel";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -30,6 +22,7 @@ export default function DashboardPage() {
 
   return (
     <main>
+        <SidebarPanel/>
       <h1 className="text-3xl font-bold">
         Welcome, {user.user_metadata.full_name}
       </h1>
