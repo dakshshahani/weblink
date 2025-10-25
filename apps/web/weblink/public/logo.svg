@@ -1,0 +1,33 @@
+<svg width="122" height="119" viewBox="0 0 122 119" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_f_59_204)">
+<ellipse cx="60.4238" cy="60.4727" rx="6.31769" ry="6.31769" transform="rotate(30 60.4238 60.4727)" fill="#DBF0FF"/>
+<circle cx="20.7417" cy="84.9793" r="10.7401" transform="rotate(30 20.7417 84.9793)" fill="#DBF0FF"/>
+<ellipse cx="76.9328" cy="101.372" rx="6.94946" ry="6.94946" transform="rotate(30 76.9328 101.372)" fill="#DBF0FF"/>
+<circle cx="102.988" cy="39.818" r="8.84477" transform="rotate(30 102.988 39.818)" fill="#DBF0FF"/>
+<circle cx="67.679" cy="15.055" r="5.05415" transform="rotate(30 67.679 15.055)" fill="#DBF0FF"/>
+<circle cx="16.1908" cy="33.4756" r="5.05415" transform="rotate(30 16.1908 33.4756)" fill="#DBF0FF"/>
+<path d="M24.481 84.2258L58.5965 62.7456" stroke="#DBF0FF"/>
+<path d="M17.5315 34.3164L60.4918 60.219" stroke="#DBF0FF"/>
+<path d="M68.0735 14.7312L60.0162 61.0969" stroke="#DBF0FF"/>
+<path d="M103.452 40.0024L60.8954 60.773" stroke="#DBF0FF"/>
+<path d="M76.9178 101.916L61.7554 61.2972" stroke="#DBF0FF"/>
+</g>
+<ellipse cx="60.4238" cy="60.187" rx="6.31769" ry="6.31769" transform="rotate(30 60.4238 60.187)" fill="#DBF0FF"/>
+<circle cx="20.7417" cy="84.6937" r="10.7401" transform="rotate(30 20.7417 84.6937)" fill="#DBF0FF"/>
+<ellipse cx="76.9328" cy="101.087" rx="6.94946" ry="6.94946" transform="rotate(30 76.9328 101.087)" fill="#DBF0FF"/>
+<circle cx="102.988" cy="39.5324" r="8.84477" transform="rotate(30 102.988 39.5324)" fill="#DBF0FF"/>
+<circle cx="67.679" cy="14.7693" r="5.05415" transform="rotate(30 67.679 14.7693)" fill="#DBF0FF"/>
+<circle cx="16.1908" cy="33.19" r="5.05415" transform="rotate(30 16.1908 33.19)" fill="#DBF0FF"/>
+<path d="M24.481 83.9401L58.5965 62.46" stroke="#DBF0FF"/>
+<path d="M17.5315 34.0308L60.4918 59.9333" stroke="#DBF0FF"/>
+<path d="M68.0735 14.4456L60.0162 60.8112" stroke="#DBF0FF"/>
+<path d="M103.452 39.7168L60.8954 60.4873" stroke="#DBF0FF"/>
+<path d="M76.9178 101.63L61.7554 61.0116" stroke="#DBF0FF"/>
+<defs>
+<filter id="filter0_f_59_204" x="0" y="0" width="121.834" height="118.323" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="5" result="effect1_foregroundBlur_59_204"/>
+</filter>
+</defs>
+</svg>
