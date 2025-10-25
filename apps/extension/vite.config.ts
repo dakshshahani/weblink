@@ -1,7 +1,12 @@
 import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export default defineConfig({
+  publicDir: 'public', // optional if you have images/icons
   build: {
     rollupOptions: {
       input: {
@@ -14,5 +19,6 @@ export default defineConfig({
       }
     },
     outDir: 'dist',
-  },
+    emptyOutDir: true
+  }
 })

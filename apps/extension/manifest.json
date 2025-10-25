@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "WebLink Extension",
+  "version": "1.0.0",
+  "description": "A Chrome Extension powered by Vite + TypeScript",
+  "action": {
+    "default_popup": "src/popup/index.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/index.js"]
+    }
+  ],
+  "permissions": ["storage", "activeTab", "scripting"]
+}
