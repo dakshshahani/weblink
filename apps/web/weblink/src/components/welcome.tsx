@@ -39,7 +39,7 @@ export default function Welcome() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-white">
       <Image
-        src="/logo.svg"
+        src="/logo.png"
         alt="Logo"
         width={140}
         height={140}

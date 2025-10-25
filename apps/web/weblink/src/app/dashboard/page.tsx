@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import {
+  Sidebar,
+  SidebarProvider,
+  SidebarFooter,
+  SidebarTrigger,
+  SidebarHeader,
+  SidebarContent,
+  SidebarGroup,
+} from "@/components/ui/sidebar";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -20,8 +29,10 @@ export default function DashboardPage() {
   if (!user) return <p>Loading dashboard...</p>;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold">Welcome, {user.user_metadata.full_name}</h1>
+    <main>
+      <h1 className="text-3xl font-bold">
+        Welcome, {user.user_metadata.full_name}
+      </h1>
       <p className="text-gray-500">{user.email}</p>
       <button
         className="mt-6 rounded bg-red-600 px-4 py-2 text-white"
