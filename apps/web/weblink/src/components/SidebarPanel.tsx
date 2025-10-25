@@ -16,95 +16,103 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
-import {
-  Link2,
-  Tags,
-  Settings,
-  ChevronDown,
-  ChevronUp,
-  LogOut,
-} from "lucide-react"
-
+import { Tags, Settings, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-// Dummy user + tags data (replace with real ones later)
 const accountName = "daksh"
 const tags = ["Work", "Study", "AI", "Personal", "Ideas", "To‑Read"]
 
-export function SidebarPanel() {
-  const [tagsOpen, setTagsOpen] = React.useState(false)
+type SidebarPanelProps = {
+  children?: React.ReactNode
+  onToggleChange?: (key: string, active: boolean) => void
+  onSignOut?: () => void
+}
+
+export function SidebarPanel({ children, onToggleChange, onSignOut }: SidebarPanelProps) {
+  // store which items are currently toggled ON
+  const [activeKeys, setActiveKeys] = React.useState<string[]>([])
+
+  // helper to toggle button state
+  const handleToggle = (key: string) => {
+    setActiveKeys((prev) => {
+      const isActive = prev.includes(key)
+      const newActive = isActive ? prev.filter((k) => k !== key) : [...prev, key]
+      onToggleChange?.(key, !isActive)  // ← send to parent
+      return newActive
+    })
+  }
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full relative">
-        <Sidebar className="bg-sidebar text-sidebar-foreground border-r border-border">
+        <Sidebar>
           {/* ---- Header ---- */}
-          <SidebarHeader className="flex items-center justify-between px-4 py-3">
-            <h2 className="font-semibold text-lg">NodeBook</h2>
+          <SidebarHeader >
+            <h2 className="font-bold text-lg">NodeBook</h2>
           </SidebarHeader>
 
-          <SidebarSeparator />
+          <SidebarSeparator className="m-0"/>
 
-          {/* ---- Sidebar content ---- */}
           <SidebarContent>
-            {/* Main navigation */}
-
-            {/* Tags dropdown */}
+            {/* ---- Tags ---- */}
             <SidebarGroup>
               <SidebarGroupLabel>Tags</SidebarGroupLabel>
               <SidebarGroupContent>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setTagsOpen((o) => !o)}
-                  className="flex w-full items-center justify-between px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                >
-                  <div className="flex items-center gap-2">
-                    <Tags className="h-4 w-4" />
-                    <span>My Tags</span>
-                  </div>
-                  {tagsOpen ? (
-                    <ChevronUp className="h-3 w-3 opacity-70" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3 opacity-70" />
-                  )}
-                </Button>
-
-                {tagsOpen && (
-                  <SidebarMenu className="mt-1">
-                    {tags.map((tag) => (
+                <SidebarMenu className="mt-1">
+                  {tags.map((tag) => {
+                    const isActive = activeKeys.includes(tag)
+                    return (
                       <SidebarMenuItem key={tag}>
                         <SidebarMenuButton
                           asChild
-                          className="pl-6 text-sm hover:bg-sidebar-accent/30"
+                          onClick={() => handleToggle(tag)}
+                          className={cn(
+                            "pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors",
+                            isActive &&
+                              "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
+                          )}
                         >
                           <a href={`#tag-${tag.toLowerCase()}`}>
-                            <span>#{tag}</span>
+                            <div className="flex items-center gap-2">
+                              <Tags
+                                className={cn(
+                                  "h-4 w-4 transition-opacity",
+                                  isActive ? "opacity-100" : "opacity-60"
+                                )}
+                              />
+                              <span>#{tag}</span>
+                            </div>
                           </a>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                )}
+                    )
+                  })}
+                </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
 
-            {/* Settings */}
+            {/* ---- Settings ---- */}
             <SidebarGroup>
               <SidebarGroupLabel>Settings</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <a
-                        href="#settings"
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <Settings className="h-4 w-4" />
-                        <span>Preferences</span>
-                      </a>
-                    </SidebarMenuButton>
+                    {(() => {
+                      const key = "settings"
+                      const isActive = activeKeys.includes(key)
+                      return (
+                        <SidebarMenuButton
+                          onClick={() => handleToggle(key)}
+                          className={cn(
+                            "flex items-center gap-2 text-sm",
+                            isActive &&
+                              "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
+                          )}
+                        >
+                          <Settings className="h-4 w-4" />
+                          <span>Preferences</span>
+                        </SidebarMenuButton>
+                      )
+                    })()}
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
@@ -125,7 +133,7 @@ export function SidebarPanel() {
                 className={cn(
                   "flex items-center gap-2 text-xs text-red-500 hover:text-red-600 hover:bg-transparent px-0"
                 )}
-                onClick={() => alert("Signing out…")}
+                onClick={onSignOut}
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out
@@ -133,7 +141,5 @@ export function SidebarPanel() {
             </div>
           </SidebarFooter>
         </Sidebar>
-      </div>
-    </SidebarProvider>
   )
 }
