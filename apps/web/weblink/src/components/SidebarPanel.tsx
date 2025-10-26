@@ -176,17 +176,16 @@ export function SidebarPanel({
         </SidebarContent>
 
         {/* ---- Footer ---- */}
-        <SidebarFooter className="border-t border-border p-3 mt-auto">
-          <div className="flex gap-2 text-xs justify-between items-center text-sidebar-foreground/70">
-            <span>
+        <SidebarFooter className="p-3">
+          <div className="flex text-xs items-center justify-between text-sidebar-foreground/70">
+            <span className="">
               Weblink {new Date().getFullYear()} &nbsp;–&nbsp; {accountName}
             </span>
-
             <Button
               variant="ghost"
               size="sm"
               className={cn(
-                "flex items-center gap-2 text-xs text-red-500 hover:text-red-600 hover:bg-transparent px-0"
+                "text-red-500 hover:text-red-600 hover:bg-transparent p-0 m-0"
               )}
               onClick={onSignOut}
             >
