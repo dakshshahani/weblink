@@ -127,13 +127,12 @@ export default function DashboardPage() {
               {header()}
             </div>
           </div>
-          <div className="flex-1 flex flex-col">
-            {/* Pass array of active tags to the graph */}
-            <ForceGraph
+          <div className="fixed inset-0 bg-black overflow-hidden">   
+            {/* <ForceGraph
               nodes={data.nodes}
               links={data.links}
               selectedTags={activeTags}
-            />
+            /> */}
           </div>
         </div>
       </SidebarProvider>

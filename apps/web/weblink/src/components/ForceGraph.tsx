@@ -55,8 +55,8 @@ export default function ForceGraph({ nodes, links, selectedTags }: Props) {
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
 
-    const width = 600;
-    const height = 400;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     const simulation = d3
       .forceSimulation(nodes)
@@ -140,5 +140,10 @@ export default function ForceGraph({ nodes, links, selectedTags }: Props) {
     };
   }, [nodes, links]);
 
-  return <svg ref={ref} width={600} height={400}></svg>;
+  return (
+    <svg
+      ref={ref}
+      className="w-full h-full block bg-white rounded-[1rem] shadow"
+    ></svg>
+  );
 }

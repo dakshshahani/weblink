@@ -34,30 +34,26 @@ export async function getGraphData() {
     url: b.url,
   }));
 
-  //   const links = bookmarkLinks.map((l) => ({
-  //     source: l.source_bookmark_id,
-  //     target: l.target_bookmark_id,
-  //   }));
-//   const responseLinks = await fetch(
-//     `https://wzzlkcfytxzccrcyavju.supabase.co/functions/v1/getLink?user_id=${userId}`,
-//     {
-//       method: "GET",
-//       headers: {
-//         Authorization: `Bearer ${session.access_token}`,
-//         "Content-Type": "application/json",
-//       },
-//     }
-//   );
+  const responseLinks = await fetch(
+    `https://wzzlkcfytxzccrcyavju.supabase.co/functions/v1/getLink?user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-//   const dataLinks = await responseLinks.json();
-//   console.log("dataLinks:", dataLinks);
-//   const bookmarkLinks = dataLinks.links;
+  const dataLinks = await responseLinks.json();
+  console.log("dataLinks:", dataLinks);
+  const bookmarkLinks = dataLinks.links;
 
-//   const links = bookmarkLinks.map((l) => ({
-//     source: l.source_bookmark_id,
-//     target: l.target_bookmark_id,
-//   }));
-  const links = [];
+    const links = bookmarkLinks.map((l) => ({
+      source: l.source_bookmark_id,
+      target: l.target_bookmark_id,
+    }));
+//   const links = [];
   return { nodes, links };
 }
 
