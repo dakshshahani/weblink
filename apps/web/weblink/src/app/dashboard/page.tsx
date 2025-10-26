@@ -104,14 +104,9 @@ export default function DashboardPage() {
 
     if (activeTags.length > 0) {
       return (
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">
-            Active Tags: {activeTags.join(", ")}
-          </h1>
           <p className="text-muted-foreground">
-            Showing bookmarks for multiple tags.
+             Active Tags: {activeTags.join(", ")}
           </p>
-        </div>
       );
     }
   };
