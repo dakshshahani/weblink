@@ -19,9 +19,10 @@ type Link = {
   relevance?: number;
 };
 
-type BookmarkTag = {
+type BookmarkTagRelation = {
   bookmark_id: string;
-  tag_name: string;
+  tag_id: string;
+  tag_name?: string; // derived later
 };
 
 export default function DashboardPage() {
@@ -30,7 +31,9 @@ export default function DashboardPage() {
   const [activeToggles, setActiveToggles] = useState<Record<string, boolean>>(
     {}
   );
-  const [bookmarkTagData, setBookmarkTagData] = useState<BookmarkTag[]>([]);
+  const [bookmarkTagData, setBookmarkTagData] = useState<BookmarkTagRelation[]>(
+    []
+  );
   const [graphData, setGraphData] = useState<{ nodes: Node[]; links: Link[] }>({
     nodes: [],
     links: [],
@@ -47,13 +50,11 @@ export default function DashboardPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
       if (!user) return;
       setUser(user);
 
       const { data: sessionData } = await supabase.auth.getSession();
       const accessToken = sessionData?.session?.access_token;
-      console.log("User access token:", accessToken);
 
       /* ------------------ FETCH AVAILABLE TAGS ------------------ */
       const tagResponse = await fetch(
@@ -68,9 +69,16 @@ export default function DashboardPage() {
       );
 
       const tagJson = await tagResponse.json();
+
+      // Build both a list of names and an ID→Name map
       const tags = Array.isArray(tagJson?.tags)
         ? tagJson.tags.map((t: any) => t?.name).filter(Boolean)
         : [];
+      const tagIdToNameMap = new Map(
+        Array.isArray(tagJson?.tags)
+          ? tagJson.tags.map((t: any) => [t.tag_id, t.name])
+          : []
+      );
 
       setAvailableTags(tags);
 
@@ -79,7 +87,6 @@ export default function DashboardPage() {
         settings: false,
       });
       setActiveToggles(toggles);
-      console.log("User ID", user.id);
 
       /* ------------------ FETCH BOOKMARK-TAG LINKS ------------------ */
       const bookmarkTagResponse = await fetch(
@@ -94,16 +101,23 @@ export default function DashboardPage() {
       );
 
       const bookmarkTagJson = await bookmarkTagResponse.json();
-      console.log("Bookmark ↔ Tag data:", bookmarkTagJson);
-      // Expecting form: [{ bookmark_id, tag_name }]
-      const relationships = Array.isArray(bookmarkTagJson)
-        ? bookmarkTagJson
-        : Array.isArray(bookmarkTagJson?.data)
-        ? bookmarkTagJson.data
+
+      // ✅ Extract correct field: "bookmark_tags"
+      const rawRelations = Array.isArray(bookmarkTagJson?.bookmark_tags)
+        ? bookmarkTagJson.bookmark_tags
         : [];
 
+      // ⚡ Add readable tag_name using the map from getTag
+      const relationships: BookmarkTagRelation[] = rawRelations.map(
+        (rel: any) => ({
+          bookmark_id: rel.bookmark_id,
+          tag_id: rel.tag_id,
+          tag_name: tagIdToNameMap.get(rel.tag_id) ?? null,
+        })
+      );
+
       setBookmarkTagData(relationships);
-      console.log("Bookmark ↔ Tag data:", relationships);
+      console.log("Mapped Bookmark ↔ Tag data:", relationships);
     };
 
     fetchUserData();
@@ -131,15 +145,15 @@ export default function DashboardPage() {
 
   /* ------------------ GRAPH FILTER ------------------ */
   const filteredGraph = useMemo(() => {
-    // no active tags → show everything
     if (activeTags.length === 0) return graphData;
 
-    const linkedBookmarkIds = bookmarkTagData
-      .filter((bt) => activeTags.includes(bt.tag_name))
+    // find bookmark_ids linked to any of the active tags
+    const matchedBookmarkIds = bookmarkTagData
+      .filter((bt) => activeTags.includes(bt.tag_name ?? ""))
       .map((bt) => bt.bookmark_id);
 
     const nodes = graphData.nodes.filter((n) =>
-      linkedBookmarkIds.includes(n.id)
+      matchedBookmarkIds.includes(n.id as string)
     );
 
     const nodeIds = new Set(nodes.map((n) => n.id));
@@ -183,6 +197,7 @@ export default function DashboardPage() {
       <SidebarProvider>
         <SidebarPanel
           availableTags={availableTags}
+          activeTags={activeTags} // ✅ new prop
           onToggleChange={handleToggleChange}
           onSignOut={handleSignOut}
         />
@@ -198,8 +213,10 @@ export default function DashboardPage() {
 
           <div className="flex flex-1 h-[93vh] w-[84vw] p-4">
             <ForceGraph
-              nodes={filteredGraph.nodes}
-              links={filteredGraph.links}
+              allNodes={graphData.nodes}
+              allLinks={graphData.links}
+              filteredNodes={filteredGraph.nodes}
+              filteredLinks={filteredGraph.links}
               selectedTags={activeTags}
             />
           </div>

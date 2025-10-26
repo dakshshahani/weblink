@@ -29,49 +29,35 @@ import {
 const accountName = "daksh";
 
 export interface SidebarPanelProps {
-  availableTags?: string[]; // ✅ dynamically passed tags
-  children?: React.ReactNode;
-  onToggleChange?: (key: ToggleKey, active: boolean) => void;
+  availableTags?: string[]; // dynamically fetched from Supabase
+  activeTags?: string[]; // controlled by parent (DashboardPage)
+  onToggleChange?: (key: ToggleKey | string, active: boolean) => void;
   onSignOut?: () => void;
 }
 
+/**
+ * SidebarPanel — now a **controlled component**.
+ * It receives active tags from the parent and only informs back via onToggleChange.
+ */
 export function SidebarPanel({
   availableTags = [],
-  children,
+  activeTags = [],
   onToggleChange,
   onSignOut,
 }: SidebarPanelProps) {
-  const [activeKeys, setActiveKeys] = React.useState<string[]>([]);
   const [hoveredTag, setHoveredTag] = React.useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null);
-  const [tags, setTags] = React.useState<string[]>(availableTags);
 
-  // keep tags in sync when availableTags changes from parent (e.g. after fetch)
-  React.useEffect(() => {
-    setTags(availableTags);
-  }, [availableTags]);
-
-  /** Toggle logic */
+  // Toggle handler — no internal activeKeys anymore
   const handleToggle = (key: string) => {
-    setActiveKeys((prev) => {
-      const isActive = prev.includes(key);
-      const nextActive = isActive
-        ? prev.filter((k) => k !== key)
-        : [...prev, key];
-
-      onToggleChange?.(key as ToggleKey, !isActive);
-      return nextActive;
-    });
+    const isActive = activeTags.includes(key);
+    onToggleChange?.(key, !isActive);
   };
 
-  /** Delete tag after confirmation */
+  /** Delete tag after confirmation (purely UI-level) */
   const confirmDelete = () => {
-    if (!deleteTarget) return;
-    setTags((prev) => prev.filter((t) => t !== deleteTarget));
     setDeleteTarget(null);
-    if (activeKeys.includes(deleteTarget)) {
-      setActiveKeys((prev) => prev.filter((k) => k !== deleteTarget));
-    }
+    // (Optional) You can hook a delete callback here to update Supabase
   };
 
   return (
@@ -88,13 +74,13 @@ export function SidebarPanel({
             <SidebarGroupLabel>Tags</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="mt-1">
-                {tags.length === 0 ? (
+                {availableTags.length === 0 ? (
                   <p className="text-sm text-muted-foreground p-2">
                     No tags found
                   </p>
                 ) : (
-                  tags.map((tag) => {
-                    const isActive = activeKeys.includes(tag);
+                  availableTags.map((tag) => {
+                    const isActive = activeTags.includes(tag);
                     return (
                       <SidebarMenuItem
                         key={tag}
@@ -103,7 +89,6 @@ export function SidebarPanel({
                         onMouseLeave={() => setHoveredTag(null)}
                       >
                         <SidebarMenuButton
-                          asChild
                           onClick={() => handleToggle(tag)}
                           className={cn(
                             "pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors pr-8",
@@ -111,17 +96,15 @@ export function SidebarPanel({
                               "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
                           )}
                         >
-                          <a href={`#tag-${tag.toLowerCase()}`}>
-                            <div className="flex items-center gap-2">
-                              <Tags
-                                className={cn(
-                                  "h-4 w-4 transition-opacity",
-                                  isActive ? "opacity-100" : "opacity-60"
-                                )}
-                              />
-                              <span>#{tag}</span>
-                            </div>
-                          </a>
+                          <div className="flex items-center gap-2">
+                            <Tags
+                              className={cn(
+                                "h-4 w-4 transition-opacity",
+                                isActive ? "opacity-100" : "opacity-60"
+                              )}
+                            />
+                            <span>#{tag}</span>
+                          </div>
                         </SidebarMenuButton>
 
                         {/* ❌ Delete Icon on hover */}
@@ -153,7 +136,7 @@ export function SidebarPanel({
                 <SidebarMenuItem>
                   {(() => {
                     const key = "settings";
-                    const isActive = activeKeys.includes(key);
+                    const isActive = activeTags.includes(key);
                     return (
                       <SidebarMenuButton
                         onClick={() => handleToggle(key)}
