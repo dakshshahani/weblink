@@ -1,0 +1,9 @@
+{
+    "nodeModulesDir": "auto",
+    "compilerOptions": {
+      "jsx": "react-jsx"
+    },
+    "imports": {
+      "openai": "npm:openai"
+    }
+  }
