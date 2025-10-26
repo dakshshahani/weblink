@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import type { ToggleKey } from "@/app/dashboard/page"
+import type { ToggleKey } from '@/app/dashboard/page'
 import {
   Sidebar,
   SidebarContent,
@@ -15,28 +15,20 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar'
-import { Tags, Settings, LogOut } from 'lucide-react'
+import { Tags, Settings, LogOut, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
 
 const accountName = 'daksh'
-const tags = [
-  'Work',
-  'Study',
-  'AI',
-  'Personal',
-  'Ideas',
-  'To‑Read',
-  'Framework',
-  'Library',
-  'Language',
-  'Database',
-]
 
-/**
- * ✅ Correct prop interface
- * The callback just reports a key and its new active state.
- */
 export interface SidebarPanelProps {
   children?: React.ReactNode
   onToggleChange?: (key: ToggleKey, active: boolean) => void
@@ -49,6 +41,20 @@ export function SidebarPanel({
   onSignOut,
 }: SidebarPanelProps) {
   const [activeKeys, setActiveKeys] = React.useState<string[]>([])
+  const [hoveredTag, setHoveredTag] = React.useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
+  const [tags, setTags] = React.useState<string[]>([
+    'Work',
+    'Study',
+    'AI',
+    'Personal',
+    'Ideas',
+    'To‑Read',
+    'Framework',
+    'Library',
+    'Language',
+    'Database',
+  ])
 
   /** Toggle helper */
   const handleToggle = (key: string) => {
@@ -58,109 +64,168 @@ export function SidebarPanel({
         ? prev.filter((k) => k !== key)
         : [...prev, key]
 
-      // Notify parent of this toggle state
       onToggleChange?.(key as ToggleKey, !isActive)
       return newActive
     })
   }
 
+  /** Delete tag after confirmation */
+  const confirmDelete = () => {
+    if (!deleteTarget) return
+    setTags((prev) => prev.filter((t) => t !== deleteTarget))
+    setDeleteTarget(null)
+    if (activeKeys.includes(deleteTarget)) {
+      setActiveKeys((prev) => prev.filter((k) => k !== deleteTarget))
+    }
+  }
+
   return (
-    <Sidebar>
-      {/* ---- Header ---- */}
-      <SidebarHeader>
-        <h2 className="font-bold text-lg">NodeBook</h2>
-      </SidebarHeader>
+    <>
+      <Sidebar>
+        {/* ---- Header ---- */}
+        <SidebarHeader>
+          <h2 className="font-bold text-lg">NodeBook</h2>
+        </SidebarHeader>
 
-      <SidebarSeparator className="m-0" />
+        <SidebarSeparator className="m-0" />
 
-      <SidebarContent>
-        {/* ---- Tags ---- */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Tags</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="mt-1">
-              {tags.map((tag) => {
-                const isActive = activeKeys.includes(tag)
-                return (
-                  <SidebarMenuItem key={tag}>
-                    <SidebarMenuButton
-                      asChild
-                      onClick={() => handleToggle(tag)}
-                      className={cn(
-                        'pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors',
-                        isActive &&
-                          'bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium'
-                      )}
-                    >
-                      <a href={`#tag-${tag.toLowerCase()}`}>
-                        <div className="flex items-center gap-2">
-                          <Tags
-                            className={cn(
-                              'h-4 w-4 transition-opacity',
-                              isActive ? 'opacity-100' : 'opacity-60'
-                            )}
-                          />
-                          <span>#{tag}</span>
-                        </div>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* ---- Settings ---- */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                {(() => {
-                  const key = 'settings'
-                  const isActive = activeKeys.includes(key)
+        <SidebarContent>
+          {/* ---- Tags ---- */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Tags</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="mt-1">
+                {tags.map((tag) => {
+                  const isActive = activeKeys.includes(tag)
                   return (
-                    <SidebarMenuButton
-                      onClick={() => handleToggle(key)}
-                      className={cn(
-                        'flex items-center gap-2 text-sm',
-                        isActive &&
-                          'bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium'
-                      )}
+                    <SidebarMenuItem
+                      key={tag}
+                      className="relative group"
+                      onMouseEnter={() => setHoveredTag(tag)}
+                      onMouseLeave={() => setHoveredTag(null)}
                     >
-                      <Settings className="h-4 w-4" />
-                      <span>Preferences</span>
-                    </SidebarMenuButton>
-                  )
-                })()}
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+                      <SidebarMenuButton
+                        asChild
+                        onClick={() => handleToggle(tag)}
+                        className={cn(
+                          'pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors pr-8', // extra right padding for the cross
+                          isActive &&
+                            'bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium'
+                        )}
+                      >
+                        <a href={`#tag-${tag.toLowerCase()}`}>
+                          <div className="flex items-center gap-2">
+                            <Tags
+                              className={cn(
+                                'h-4 w-4 transition-opacity',
+                                isActive ? 'opacity-100' : 'opacity-60'
+                              )}
+                            />
+                            <span>#{tag}</span>
+                          </div>
+                        </a>
+                      </SidebarMenuButton>
 
-      {/* ---- Footer ---- */}
-      <SidebarFooter className="border-t border-border p-3 mt-auto">
-        <div className="flex flex-col gap-2 text-xs text-sidebar-foreground/70">
-          <div className="flex justify-between items-center">
-            <span>
-              Weblink {new Date().getFullYear()} &nbsp;–&nbsp; {accountName}
-            </span>
+                      {/* ❌ Delete Icon on hover */}
+                      {hoveredTag === tag && (
+                        <button
+                          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-80 hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            e.preventDefault()
+                            setDeleteTarget(tag)
+                          }}
+                        >
+                          <X className="h-4 w-4 text-red-500 hover:text-red-600" />
+                        </button>
+                      )}
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* ---- Settings ---- */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Settings</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  {(() => {
+                    const key = 'settings'
+                    const isActive = activeKeys.includes(key)
+                    return (
+                      <SidebarMenuButton
+                        onClick={() => handleToggle(key)}
+                        className={cn(
+                          'flex items-center gap-2 text-sm',
+                          isActive &&
+                            'bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium'
+                        )}
+                      >
+                        <Settings className="h-4 w-4" />
+                        <span>Preferences</span>
+                      </SidebarMenuButton>
+                    )
+                  })()}
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        {/* ---- Footer ---- */}
+        <SidebarFooter className="border-t border-border p-3 mt-auto">
+          <div className="flex flex-col gap-2 text-xs text-sidebar-foreground/70">
+            <div className="flex justify-between items-center">
+              <span>
+                Weblink {new Date().getFullYear()} &nbsp;–&nbsp; {accountName}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 text-xs text-red-500 hover:text-red-600 hover:bg-transparent px-0'
+              )}
+              onClick={onSignOut}
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              'flex items-center gap-2 text-xs text-red-500 hover:text-red-600 hover:bg-transparent px-0'
-            )}
-            onClick={onSignOut}
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Button>
-        </div>
-      </SidebarFooter>
-    </Sidebar>
+        </SidebarFooter>
+      </Sidebar>
+
+      {/* ---- Delete Confirmation Dialog ---- */}
+      <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Tag</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete “{deleteTarget}”? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 justify-end">
+            <Button
+              variant="ghost"
+              onClick={() => setDeleteTarget(null)}
+              className="text-gray-500"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
