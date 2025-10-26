@@ -1,0 +1,1 @@
+importScripts("./supabaseWorker.js");

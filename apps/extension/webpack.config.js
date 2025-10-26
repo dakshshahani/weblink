@@ -1,53 +1,55 @@
-const path = require('path');
-const HTMLPlugin = require('html-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require("path");
+const HTMLPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: {
-    index: './src/index.js',
+    index: "./src/index.js",
+    background: "./supabaseWorker.js",
   },
-  mode: 'production',
+  mode: "production",
   module: {
     rules: [
       {
         test: /\.js$/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
+            presets: ["@babel/preset-env", "@babel/preset-react"],
           },
         },
         exclude: /node_modules/,
       },
       {
         test: /\.css$/i,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'postcss-loader',
-        ],
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
         exclude: /node_modules/,
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].css',
+      filename: "[name].css",
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'manifest.json', to: '../manifest.json' },
+        { from: "manifest.json", to: "../manifest.json" },
+        {
+          from: "public",
+          to: "../",
+          globOptions: { ignore: ["**/index.html"] },
+        },
       ],
     }),
-    ...getHtmlPlugins(['index']),
+    ...getHtmlPlugins(["index"]),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: [".js", ".jsx"],
   },
   output: {
-    path: path.join(__dirname, 'dist/js'),
-    filename: '[name].js',
+    path: path.join(__dirname, "dist/js"),
+    filename: "[name].js",
   },
 };
 
@@ -55,7 +57,7 @@ function getHtmlPlugins(chunks) {
   return chunks.map(
     (chunk) =>
       new HTMLPlugin({
-        title: 'React extension',
+        title: "React extension",
         filename: `${chunk}.html`,
         chunks: [chunk],
       })
