@@ -205,7 +205,7 @@ export function SidebarPanel({
             <DialogTitle>Delete Tag</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete “{deleteTarget}”? This action
-              cannot be undone.
+              cannot be undone. Your notes will NOT be deleted.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 justify-end">
