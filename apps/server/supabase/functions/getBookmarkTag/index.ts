@@ -10,48 +10,35 @@ serve(async (req) => {
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "http://localhost:3000",
-    "Access-Control-Allow-Methods": "GET, OPTIONS, POST, DELETE, PUT",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
-  if (req.method === "OPTIONS") return new Response("ok", { headers });
+  if (req.method === "OPTIONS") return new Response("ok", { status: 200, headers });
 
   if (req.method !== "GET") {
     return new Response(
       JSON.stringify({ error: "Method not allowed. Use GET." }),
-      { status: 405, headers },
+      { status: 405, headers }
     );
   }
 
   try {
     const url = new URL(req.url);
     const user_id = url.searchParams.get("user_id");
-    const source_bookmark_id = url.searchParams.get("source_bookmark_id");
-    const target_bookmark_id = url.searchParams.get("target_bookmark_id");
 
-    // Require user_id (for filtering)
     if (!user_id) {
       return new Response(
         JSON.stringify({ error: "Missing required query parameter: user_id" }),
         { status: 400, headers }
       );
     }
-    // Optional filters
-    let query = supabase
-      .from("bookmark_links")
-      .select(
-        "link_id, user_id, source_bookmark_id, target_bookmark_id, relevance_score, created_at"
-      )
-      .eq("user_id", user_id)
-      .order("created_at", { ascending: false });
 
-
-    if (source_bookmark_id)
-      query = query.eq("source_bookmark_id", source_bookmark_id);
-    if (target_bookmark_id)
-      query = query.eq("target_bookmark_id", target_bookmark_id);
-
-    const { data, error } = await query;
+    // Get all bookmark tag relations for this user
+    const { data, error } = await supabase
+      .from("bookmark_tags")
+      .select("bookmark_id, tag_id, user_id")
+      .eq("user_id", user_id);
 
     if (error) throw error;
 
@@ -60,16 +47,15 @@ serve(async (req) => {
         success: true,
         user_id,
         count: data?.length ?? 0,
-        links: data ?? [],
+        bookmark_tags: data ?? [],
       }),
-      { status: 200, headers },
+      { status: 200, headers }
     );
   } catch (err) {
-    console.error("getLinks error:", err);
+    console.error("getBookmarkTags error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers,
     });
   }
 });
-

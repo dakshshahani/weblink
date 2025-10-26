@@ -9,6 +9,7 @@ const supabase = createClient(
 serve(async (req) => {
   const headers = {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Origin": "http://localhost:3000",
     "Access-Control-Allow-Methods": "GET, OPTIONS, POST, DELETE, PUT",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
@@ -41,33 +42,9 @@ const { data, error } = await supabase
 
 
 
-    // const bookmark_id = url.searchParams.get("bookmark_id");
+    
 
-    // if (!user_id && !bookmark_id) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error:
-    //         "Missing required query parameter: provide user_id or bookmark_id",
-    //     }),
-    //     { status: 400, headers },
-    //   );
-    // }
-
-    // let data, error;
-
-    // // Get all tags linked to a single bookmark
-    // if (bookmark_id) {
-    //   ({ data, error } = await supabase
-    //     .from("bookmark_tags")
-    //     .select("Tag(tag_id, name, created_at)")
-    //     .eq("bookmark_id", bookmark_id));
-    // } else {
-    //   // Fetch all tags (optionally you can filter by user if table structure supports)
-    //   ({ data, error } = await supabase
-    //     .from("Tag")
-    //     .select("tag_id, name, created_at")
-    //     .order("created_at", { ascending: false }));
-    // }
+   
 
     if (error) throw error;
 
