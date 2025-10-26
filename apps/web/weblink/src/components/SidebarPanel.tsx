@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import type { ToggleKey } from "@/app/dashboard/page"
 import {
   Sidebar,
   SidebarContent,
@@ -38,7 +39,7 @@ const tags = [
  */
 export interface SidebarPanelProps {
   children?: React.ReactNode
-  onToggleChange?: (key: string, active: boolean) => void
+  onToggleChange?: (key: ToggleKey, active: boolean) => void
   onSignOut?: () => void
 }
 
@@ -58,7 +59,7 @@ export function SidebarPanel({
         : [...prev, key]
 
       // Notify parent of this toggle state
-      onToggleChange?.(key, !isActive)
+      onToggleChange?.(key as ToggleKey, !isActive)
       return newActive
     })
   }

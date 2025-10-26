@@ -10,7 +10,7 @@ import { getGraphData } from '@/lib/graphData'
 /**
  * Type-safe keys for all sidebar buttons (match your sidebar setup)
  */
-type ToggleKey =
+export type ToggleKey =
   | 'settings'
   | 'Work'
   | 'Study'
@@ -153,3 +153,4 @@ export default function DashboardPage() {
     </main>
   )
 }
+
