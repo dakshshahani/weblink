@@ -8,7 +8,7 @@ const supabase = createClient(
 );
 
 serve(async (req) => {
-  // ✅ Handle CORS pre-flight requests
+  // Handle CORS pre-flight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {

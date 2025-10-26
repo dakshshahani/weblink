@@ -3,119 +3,92 @@ import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./App.css";
 
-// 🧩 Initialize your Supabase client (only once)
-const supabase = createClient(
-  "<YOUR_SUPABASE_URL>",
-  "<YOUR_SUPABASE_ANON_KEY>"
-);
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { handleGoogleOAuth } from "@/lib/supabaseAuth";
 
-export default function LoggedInView() {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [statusBar, setStatusBar] = useState(true);
-  const [activityBar, setActivityBar] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [user, setUser] = useState(null);
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
-  // 🔐 Fetch current user session
+export default function Welcome() {
+  const [open, setOpen] = useState(false);
+  const [login, setLogin] = useState(false);
+  const [signup, setSignup] = useState(false);
+
+  // individual form fields
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  // Mouse tracking for gradient animation
+  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const [gradientPosition, setGradientPosition] = useState({ x: 50, y: 50 });
+  const animationRef = useRef<number | null>(null);
+
+  // Validation checks
+  const passwordsMatch =
+    confirmPassword.length === 0 || password === confirmPassword;
+  const isLoginFilled = email.trim() !== "" && password.trim() !== "";
+  const isSignupFilled =
+    name.trim() !== "" &&
+    email.trim() !== "" &&
+    password.trim() !== "" &&
+    confirmPassword.trim() !== "" &&
+    passwordsMatch;
+
+  // Mouse tracking effect
   useEffect(() => {
-    async function getUser() {
-      // Get the currently logged-in user (if any)
-      const {
-        data: { session },
-        error
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error getting session:", error);
-        return;
-      }
-
-      if (session?.user) {
-        setUser(session.user);
-        console.log("✅ Logged-in user:", session.user);
-      } else {
-        console.log("No active session");
-      }
-    }
-
-    getUser();
-
-    // Optional: subscribe to auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
+    const handleMouseMove = (e: MouseEvent) => {
+      // Map mouse to a smaller range around center (40-60%) for subtlety
+      const x = 50 + ((e.clientX / window.innerWidth - 0.5) * 20);
+      const y = 50 + ((e.clientY / window.innerHeight - 0.5) * 20);
+      setMousePosition({ x, y });
     };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // 🧠 Function to call your Supabase Edge Function
-  async function handleAddBookmark() {
-    if (!user) {
-      alert("Please log in first to add a bookmark.");
-      return;
-    }
+  // Smooth gradient animation effect
+  useEffect(() => {
+    const animateGradient = () => {
+      setGradientPosition(prev => ({
+        x: prev.x + (mousePosition.x - prev.x) * 0.005, // Extremely slow easing
+        y: prev.y + (mousePosition.y - prev.y) * 0.005
+      }));
+      animationRef.current = requestAnimationFrame(animateGradient);
+    };
 
-    try {
-      const functionUrl =
-        "https://wzzlkcfytxzccrcyavju.functions.supabase.co/addBookmark";
-
-      const payload = {
-        user_id: user.id, // ✅ now dynamic!
-        url: "https://example.com",
-        title: "Example Bookmark",
-        description: "this is a test"
-      };
-
-      const response = await fetch(functionUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${(
-            await supabase.auth.getSession()
-          ).data.session?.access_token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error("Edge function error:", errText);
-        alert(`Failed to add bookmark: ${response.status}`);
-        return;
+    animationRef.current = requestAnimationFrame(animateGradient);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
       }
+    };
+  }, [mousePosition]);
 
-      const data = await response.json();
-      console.log("✅ Bookmark added successfully:", data);
-      setIsBookmarked(true);
-    } catch (error) {
-      console.error("❌ Error adding bookmark:", error);
-      alert("Something went wrong. Check console for details.");
-    }
-  }
-
-  // === same UI code as before ===
   return (
-    <div className="relative w-[15rem] h-[15rem] overflow-hidden rounded-lg flex flex-col items-center justify-center text-white bg-neutral-950">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            radial-gradient(
-              circle at 50% 85%,
-              rgba(189,108,38,0.35) 0%,
-              rgba(113,40,120,0.25) 35%,
-              rgba(24,11,98,0.35) 60%,
-              transparent 90%
-            )
-          `,
-          transform: "translateY(10%) scale(1.1)",
-          filter: "blur(12px)"
-        }}
+    <div 
+      className="flex flex-col items-center justify-center min-h-screen text-white transition-all duration-2000 ease-out"
+      style={{
+        background: `radial-gradient(400% 400% at ${gradientPosition.x}% ${gradientPosition.y}%, #AD6B32 0%, #180E57 16.48%, #161340 24.88%, #100D25 35%, #000 100%)`
+      }}
+    >
+      <Image
+        src="/logo.png"
+        alt="Logo"
+        width={140}
+        height={140}
+        className="mb-6"
       />
 
       <div
