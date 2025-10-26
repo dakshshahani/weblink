@@ -12,7 +12,6 @@ const rootDiv = ReactDOM.createRoot(root);
 
 rootDiv.render(
   <React.StrictMode>
-    <App/>
-    {/* <LoggedInView/> */}
+    <LoggedInView/>
   </React.StrictMode>
 );

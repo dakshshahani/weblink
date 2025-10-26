@@ -1,7 +1,4 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-import "./App.css";
 
 import { useRef } from "react";
 import Image from "next/image";
@@ -90,76 +87,9 @@ export default function Welcome() {
         height={140}
         className="mb-6"
       />
-
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 100%, rgba(0,0,0,0.35) 10%, transparent 70%)",
-          mixBlendMode: "multiply"
-        }}
-      />
-
-      {/* === CONTENT === */}
-      <div className="relative z-10 flex flex-col justify-around items-center text-center px-4 py-3 w-full h-full">
-        <img
-          src="/logo.png"
-          alt="WebLink Logo"
-          className="w-9 h-9 mb-2 select-none"
-          draggable="false"
-        />
-
-        <div className="flex flex-col gap-2 w-[10.3rem] mx-auto">
-          <button
-            onClick={handleAddBookmark}
-            disabled={isBookmarked}
-            className={`flex items-center justify-between text-[9px] font-medium rounded-md h-6 px-2 transition-colors ${
-              isBookmarked
-                ? "bg-green-100 text-green-800 hover:bg-green-200"
-                : "bg-white text-black hover:bg-gray-200"
-            }`}
-          >
-            <span>
-              {isBookmarked ? "Bookmark saved!" : "Bookmark this page"}
-            </span>
-            {isBookmarked ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-2.5 h-2.5 text-green-600"
-              >
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-2.5 h-2.5"
-              >
-                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
-              </svg>
-            )}
-          </button>
-
-          {/* Subtitle */}
-          <p className="text-[9px] text-gray-300 leading-snug max-w-[11rem]">
-            {user
-              ? `Logged in as ${user.email}`
-              : "Please log in to save bookmarks."}
-          </p>
-        </div>
+      <h1 className="text-4xl font-bold mb-2">Welcome to Weblink</h1>
+      <p className="text-gray-300 mb-6">All your links, linked.</p>
+      <Button className="py-2 px-8" onClick={handleGoogleOAuth}> Start linking with  <Image src="/google.svg" alt="google" width={15} height={15} /></Button>
       </div>
-    </div>
   );
 }
