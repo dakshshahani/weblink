@@ -1,36 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
+import LoggedInView from "./components/LoggedInView.js";
+import { BackgroundGlow } from "./components/BackgroundGlow.js";
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  if (isLoggedIn) {
+    return <LoggedInView />;
+  }
+
   return (
     <div className="relative w-[15rem] h-[15rem] overflow-hidden rounded-lg flex flex-col items-center justify-center text-white bg-neutral-950">
-      {/* === GLOW BACKGROUND === */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            radial-gradient(
-              circle at 50% 85%,
-              rgba(189, 108, 38, 0.35) 0%,       /* orange glow */
-              rgba(113, 40, 120, 0.25) 35%,      /* violet */
-              rgba(24, 11, 98, 0.35) 60%,        /* indigo */
-              transparent 90%
-            )
-          `,
-          transform: "translateY(10%) scale(1.1)",
-          filter: "blur(12px)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 100%, rgba(0,0,0,0.35) 10%, transparent 70%)",
-          mixBlendMode: "multiply",
-        }}
-      />
+      <BackgroundGlow />
 
       {/* === LOGO + TEXT === */}
       <div className="relative z-10 flex flex-col items-center text-center px-3">
@@ -45,7 +27,7 @@ export default function App() {
 
         {/* === GOOGLE SIGN-IN BUTTON — logo on right, color #180B62 === */}
         <button
-          onClick={() => alert("Google Sign-In coming soon 🚀")}
+          onClick={() => setIsLoggedIn(true)}
           className="flex items-center justify-center gap-2 w-[13rem] py-2 text-sm font-medium rounded-md transition-transform active:scale-[0.98]"
           style={{
             backgroundColor: "#180B62",

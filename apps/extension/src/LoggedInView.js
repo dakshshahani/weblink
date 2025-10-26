@@ -6,6 +6,7 @@ export default function LoggedInView() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [statusBar, setStatusBar] = useState(true);
   const [activityBar, setActivityBar] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   return (
     <div className="relative w-[15rem] h-[15rem] overflow-hidden rounded-lg flex flex-col items-center justify-center text-white bg-neutral-950">
@@ -38,7 +39,7 @@ export default function LoggedInView() {
       />
 
       {/* === CONTENT === */}
-      <div className="relative z-10 flex flex-col items-center text-center px-4 py-3 w-full h-full">
+      <div className="relative z-10 flex flex-col justify-around items-center text-center px-4 py-3 w-full h-full">
         {/* Logo */}
         <img
           src="/logo.png"
@@ -49,31 +50,49 @@ export default function LoggedInView() {
         {/* === Bookmark + Tags === */}
         <div className="flex flex-col gap-2 w-[10.3rem] mx-auto">
           {/* Bookmark Button */}
-          <button className="flex items-center justify-between bg-white text-black text-[9px] font-medium rounded-md h-6 px-2 hover:bg-gray-200 transition">
-            <span>Bookmark this page</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="10"
-              height="10"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-2.5 h-2.5"
-            >
-              <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
-            </svg>
+          <button
+            onClick={() => setIsBookmarked(!isBookmarked)}
+            className={`flex items-center justify-between text-[9px] font-medium rounded-md h-6 px-2 transition-colors ${
+              isBookmarked
+                ? "bg-green-100 text-green-800 hover:bg-green-200"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
+          >
+            <span>
+              {isBookmarked ? "Bookmark saved!" : "Bookmark this page"}
+            </span>
+            {isBookmarked ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-2.5 h-2.5 text-green-600"
+              >
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-2.5 h-2.5"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+              </svg>
+            )}
           </button>
-           {/* Subtitle */}
-        <p className="text-[9px] text-gray-300 leading-snug max-w-[11rem] mb-2">
-          We’ve determined this page links with:
-        </p>
-
-        <span className="text-gray-100 font-medium text-[9px] mb-3">
-          Lorem, Ipsum, Kashish, Daksh
-        </span>
+          {/* Subtitle */}
+          <p className="text-[9px] text-gray-300 leading-snug max-w-[11rem]">
+            We’ve determined this page links with /input no/ links!
+          </p>
           {/* Dropdown */}
           <div className="relative">
             <button

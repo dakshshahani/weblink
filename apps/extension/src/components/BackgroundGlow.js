@@ -1,33 +1,15 @@
 import React from "react";
-import clsx from "clsx";
+import { cn } from "./lib/utils";
 
-type Props = {
-  className?: string;
-  children?: React.ReactNode;
-  /** 0–100; lower = dimmer, higher = brighter */
-  intensity?: number;
-};
-
-export default function BackgroundGlow({
-  className,
-  children,
-  intensity = 100,
-}: Props) {
+export function BackgroundGlow({ className, intensity = 100 }) {
   // clamp intensity 0–100 and convert to 0–1 for opacity
   const o = Math.max(0, Math.min(100, intensity)) / 100;
 
   return (
-    <div
-      className={clsx(
-        // changed only size related classes
-        "relative w-[15rem] h-[15rem] overflow-hidden bg-neutral-950 text-white",
-        className
-      )}
-    >
+    <>
       {/* GLOW LAYER */}
       <div
         aria-hidden
-        // changed to absolute instead of fixed to keep within the box
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage: `
@@ -47,7 +29,6 @@ export default function BackgroundGlow({
       {/* SUBTLE VIGNETTE TO DARKEN CORNERS */}
       <div
         aria-hidden
-        // changed to absolute instead of fixed
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           backgroundImage: `
@@ -61,7 +42,6 @@ export default function BackgroundGlow({
       {/* OPTIONAL: a faint grain for texture */}
       <div
         aria-hidden
-        // changed to absolute instead of fixed
         className="pointer-events-none absolute inset-0 -z-10 opacity-20"
         style={{
           backgroundImage:
@@ -69,8 +49,6 @@ export default function BackgroundGlow({
           backgroundSize: "auto",
         }}
       />
-
-      {children}
-    </div>
+    </>
   );
 }
