@@ -12,17 +12,23 @@ serve(async (req) => {
   // Common headers for all responses (CORS + JSON)
   const headers = {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "http://localhost:3000",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE, PUT",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
   // Handle OPTIONS (preflight) requests for CORS
+  // if (req.method === "OPTIONS") {
+  //   return new Response("ok", {
+  //     headers: {
+  //       ...headers,
+  //       "Access-Control-Allow-Methods": "GET, OPTIONS",
+  //     },
+  //   });
+  // }
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        ...headers,
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-      },
-    });
+    return new Response("ok", { headers });
   }
 
   // Allow only GET
@@ -47,7 +53,7 @@ serve(async (req) => {
 
     // Fetch all bookmarks belonging to this user
     const { data, error } = await supabase
-      .from("Bookmark") // 👈 change to lowercase if your table is lowercase
+      .from("Bookmark") 
       .select(
         "bookmark_id, user_id, title, url, description, favicon_url, created_at"
       )
