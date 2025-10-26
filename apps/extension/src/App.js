@@ -1,7 +1,6 @@
 import React from "react";
 import "./App.css";
 
-// ✅ Main popup component (15rem × 15rem)
 export default function App() {
   return (
     <div className="relative w-[15rem] h-[15rem] overflow-hidden rounded-lg flex flex-col items-center justify-center text-white bg-neutral-950">
@@ -44,15 +43,20 @@ export default function App() {
         <h1 className="text-xl font-semibold mb-1">WebLink</h1>
         <p className="text-xs text-gray-300 mb-4">All your links, linked.</p>
 
-        {/* === BUTTONS === */}
-        <div className="flex gap-3">
-          <button className="px-3 py-1.5 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition">
-            New User
-          </button>
-          <button className="px-3 py-1.5 text-xs rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition">
-            Returning User
-          </button>
-        </div>
+        {/* === ONE BUTTON WITH GOOGLE ICON ON THE RIGHT === */}
+        <button
+          onClick={() => alert("Google Sign-In coming soon 🚀")}
+          className="flex items-center justify-center gap-2 w-[13rem] py-1.5 bg-white text-black text-sm font-medium rounded-md shadow-sm hover:bg-gray-100 transition border border-gray-200"
+        >
+          {/* Text first, logo second */}
+          <span>Sign in with Google</span>
+          <img
+            src="/google.svg"
+            alt="Google logo"
+            className="w-4 h-4"
+            draggable="false"
+          />
+        </button>
       </div>
     </div>
   );
