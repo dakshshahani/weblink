@@ -38,40 +38,40 @@ export default function LoggedInView() {
       />
 
       {/* === CONTENT === */}
-      <div className="relative z-10 flex flex-col items-center text-center px-4 py-3 space-y-2 w-full h-full">
+      <div className="relative z-10 flex flex-col items-center text-center px-4 py-3 w-full h-full">
         {/* Logo */}
         <img
           src="/logo.png"
           alt="WebLink Logo"
-          className="w-9 h-9 mb-1 select-none"
+          className="w-9 h-9 mb-2 select-none" // ⬅️ added extra bottom margin
           draggable="false"
         />
 
         {/* Subtitle */}
-        <p className="text-[9px] text-gray-300 mb-1 leading-snug max-w-[11rem]">
-          We’ve determined this bookmark links with:
-          <br />
-          <span className="text-gray-100 font-medium">
-            Lorem, Ipsum, Kashish, Daksh
-          </span>
+        <p className="text-[9px] text-gray-300 leading-snug max-w-[11rem] mb-2">
+          We’ve determined this page links with:
         </p>
 
+        <span className="text-gray-100 font-medium text-[9px] mb-3">
+          Lorem, Ipsum, Kashish, Daksh
+        </span>
+
         {/* === Bookmark + Tags === */}
-        <div className="flex flex-col gap-2 w-[10.5rem] mx-auto">
+        <div className="flex flex-col gap-2 w-[10.3rem] mx-auto">
           {/* Bookmark button */}
-          <button className="flex items-center justify-between bg-white text-black text-[11px] font-medium rounded-md h-6 px-2 hover:bg-gray-200 transition">
+          <button className="flex items-center justify-between bg-white text-black text-[9px] font-medium rounded-md h-6 px-2 hover:bg-gray-200 transition">
             <span>Bookmark this page</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="12"
-              height="12"
+              width="10"
+              height="10"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="w-3 h-3"
+              className="w-2.5 h-2.5"
             >
               <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
             </svg>
@@ -81,19 +81,19 @@ export default function LoggedInView() {
           <div className="relative">
             <button
               onClick={() => setShowDropdown((prev) => !prev)}
-              className="flex items-center justify-between bg-white text-black text-[11px] font-medium rounded-md h-6 w-full px-2 hover:bg-gray-200 transition"
+              className="flex items-center justify-between bg-white text-black text-[9px] font-medium rounded-md h-6 w-full px-2 hover:bg-gray-200 transition"
             >
               <span>Add tags</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="12"
-                height="12"
+                width="10"
+                height="10"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={`w-3 h-3 transition-transform ${
+                className={`w-2.5 h-2.5 transition-transform ${
                   showDropdown ? "rotate-180" : "rotate-0"
                 }`}
               >
@@ -101,30 +101,30 @@ export default function LoggedInView() {
               </svg>
             </button>
 
-            {/* Dropdown content w/ animation */}
+            {/* Animated dropdown content */}
             <div
-              className={`absolute left-0 mt-1 w-full bg-white text-black text-[11px] rounded-md shadow-md border border-gray-200 z-20 p-1.5 space-y-0.5 
+              className={`absolute left-0 mt-1 w-full bg-white text-black text-[9px] rounded-md shadow-md border border-gray-200 z-20 p-1.5 space-y-0.5 
                 transform transition-all duration-200 ease-out origin-top ${
                   showDropdown
                     ? "opacity-100 scale-100 translate-y-0"
                     : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
                 }`}
             >
-              <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 rounded px-2 py-0.5">
+              <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 rounded px-2 py-[2px]">
                 <input
                   type="checkbox"
-                  className="accent-[#180B62] h-3 w-3"
+                  className="accent-[#180B62] h-2.5 w-2.5"
                   checked={statusBar}
                   onChange={() => setStatusBar(!statusBar)}
                 />
                 <span>Status Bar</span>
               </label>
 
-              <label className="flex items-center gap-2 cursor-pointer text-gray-500 rounded px-2 py-0.5">
+              <label className="flex items-center gap-2 cursor-pointer text-gray-500 rounded px-2 py-[2px]">
                 <input
                   type="checkbox"
                   disabled
-                  className="accent-[#180B62] h-3 w-3"
+                  className="accent-[#180B62] h-2.5 w-2.5"
                   checked={activityBar}
                   onChange={() => setActivityBar(!activityBar)}
                 />
@@ -133,7 +133,7 @@ export default function LoggedInView() {
 
               <button
                 onClick={() => alert("Add new tag clicked")}
-                className="flex items-center gap-2 w-full text-left px-2 py-0.5 rounded hover:bg-gray-100 text-[#180B62] font-medium"
+                className="flex items-center gap-2 w-full text-left px-2 py-[2px] rounded hover:bg-gray-100 text-[#180B62] font-medium"
               >
                 <span>+ Add a new tag</span>
               </button>
@@ -142,7 +142,7 @@ export default function LoggedInView() {
         </div>
 
         {/* Footer */}
-        <p className="text-[8px] text-gray-400 mt-2 max-w-[10rem] text-center leading-snug">
+        <p className="text-[8px] text-gray-400 mt-3 max-w-[10rem] text-center leading-snug">
           Add tags in addition to the ones we’ve identified.
         </p>
       </div>
