@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { supabase } from "../../lib/supabaseClient";
 import { SidebarPanel } from "@/components/SidebarPanel";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import ForceGraph from "@/components/ForceGraph";
+import { getGraphData } from "@/lib/graphData";
 
 /**
  * Type-safe keys for all sidebar buttons
@@ -19,11 +20,29 @@ type ToggleKey =
   | "Ideas"
   | "To‑Read";
 
+type Node = {
+  id: string | number;
+  name: string;
+};
+
+type Link = {
+  source: string | number;
+  target: string | number;
+};
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [activeToggles, setActiveToggles] = useState<
     Record<ToggleKey, boolean>
   >({} as Record<ToggleKey, boolean>);
+
+  const [data, setData] = useState<{ nodes: Node[]; links: Link[] }>({
+    nodes: [],
+    links: [],
+  });
+  useEffect(() => {
+    getGraphData().then(setData);
+  }, []);
 
   async function handleSignOut() {
     const { error } = await supabase.auth.signOut();
@@ -137,6 +156,7 @@ export default function DashboardPage() {
           {/* Main Page Content */}
           <div className="flex-1 flex flex-col">
             {header()}
+            <ForceGraph nodes={data.nodes} links={data.links} />
           </div>
         </div>
       </SidebarProvider>
