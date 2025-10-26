@@ -43,13 +43,16 @@ export default function App() {
         <h1 className="text-xl font-semibold mb-1">WebLink</h1>
         <p className="text-xs text-gray-300 mb-4">All your links, linked.</p>
 
-        {/* === ONE BUTTON WITH GOOGLE ICON ON THE RIGHT === */}
+        {/* === GOOGLE SIGN-IN BUTTON — logo on right, color #180B62 === */}
         <button
           onClick={() => alert("Google Sign-In coming soon 🚀")}
-          className="flex items-center justify-center gap-2 w-[13rem] py-1.5 bg-white text-black text-sm font-medium rounded-md shadow-sm hover:bg-gray-100 transition border border-gray-200"
+          className="flex items-center justify-center gap-2 w-[13rem] py-2 text-sm font-medium rounded-md transition-transform active:scale-[0.98]"
+          style={{
+            backgroundColor: "#180B62",
+            color: "#fff",
+          }}
         >
-          {/* Text first, logo second */}
-          <span>Sign in with Google</span>
+          <span>Start linking with</span>
           <img
             src="/google.svg"
             alt="Google logo"
