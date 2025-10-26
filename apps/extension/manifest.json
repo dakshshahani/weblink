@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "WebLink",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "identity"],
+  "host_permissions": [
+    "https://*.supabase.co/*",
+    "https://accounts.google.com/*"
+  ]
+}
