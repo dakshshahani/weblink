@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import React from 'react'
-import type { ToggleKey } from '@/app/dashboard/page'
+import React from "react";
+import type { ToggleKey } from "@/app/dashboard/page";
 import {
   Sidebar,
   SidebarContent,
@@ -14,10 +14,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from '@/components/ui/sidebar'
-import { Tags, Settings, LogOut, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/sidebar";
+import { Tags, Settings, LogOut, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -25,14 +25,14 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog";
 
-const accountName = 'daksh'
+const accountName = "daksh";
 
 export interface SidebarPanelProps {
-  children?: React.ReactNode
-  onToggleChange?: (key: ToggleKey, active: boolean) => void
-  onSignOut?: () => void
+  children?: React.ReactNode;
+  onToggleChange?: (key: ToggleKey, active: boolean) => void;
+  onSignOut?: () => void;
 }
 
 export function SidebarPanel({
@@ -40,44 +40,44 @@ export function SidebarPanel({
   onToggleChange,
   onSignOut,
 }: SidebarPanelProps) {
-  const [activeKeys, setActiveKeys] = React.useState<string[]>([])
-  const [hoveredTag, setHoveredTag] = React.useState<string | null>(null)
-  const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null)
+  const [activeKeys, setActiveKeys] = React.useState<string[]>([]);
+  const [hoveredTag, setHoveredTag] = React.useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null);
   const [tags, setTags] = React.useState<string[]>([
-    'Work',
-    'Study',
-    'AI',
-    'Personal',
-    'Ideas',
-    'To‑Read',
-    'Framework',
-    'Library',
-    'Language',
-    'Database',
-  ])
+    "Work",
+    "Study",
+    "AI",
+    "Personal",
+    "Ideas",
+    "To‑Read",
+    "Framework",
+    "Library",
+    "Language",
+    "Database",
+  ]);
 
   /** Toggle helper */
   const handleToggle = (key: string) => {
     setActiveKeys((prev) => {
-      const isActive = prev.includes(key)
+      const isActive = prev.includes(key);
       const newActive = isActive
         ? prev.filter((k) => k !== key)
-        : [...prev, key]
+        : [...prev, key];
 
-      onToggleChange?.(key as ToggleKey, !isActive)
-      return newActive
-    })
-  }
+      onToggleChange?.(key as ToggleKey, !isActive);
+      return newActive;
+    });
+  };
 
   /** Delete tag after confirmation */
   const confirmDelete = () => {
-    if (!deleteTarget) return
-    setTags((prev) => prev.filter((t) => t !== deleteTarget))
-    setDeleteTarget(null)
+    if (!deleteTarget) return;
+    setTags((prev) => prev.filter((t) => t !== deleteTarget));
+    setDeleteTarget(null);
     if (activeKeys.includes(deleteTarget)) {
-      setActiveKeys((prev) => prev.filter((k) => k !== deleteTarget))
+      setActiveKeys((prev) => prev.filter((k) => k !== deleteTarget));
     }
-  }
+  };
 
   return (
     <>
@@ -96,7 +96,7 @@ export function SidebarPanel({
             <SidebarGroupContent>
               <SidebarMenu className="mt-1">
                 {tags.map((tag) => {
-                  const isActive = activeKeys.includes(tag)
+                  const isActive = activeKeys.includes(tag);
                   return (
                     <SidebarMenuItem
                       key={tag}
@@ -108,17 +108,17 @@ export function SidebarPanel({
                         asChild
                         onClick={() => handleToggle(tag)}
                         className={cn(
-                          'pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors pr-8', // extra right padding for the cross
+                          "pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors pr-8", // extra right padding for the cross
                           isActive &&
-                            'bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium'
+                            "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
                         )}
                       >
                         <a href={`#tag-${tag.toLowerCase()}`}>
                           <div className="flex items-center gap-2">
                             <Tags
                               className={cn(
-                                'h-4 w-4 transition-opacity',
-                                isActive ? 'opacity-100' : 'opacity-60'
+                                "h-4 w-4 transition-opacity",
+                                isActive ? "opacity-100" : "opacity-60"
                               )}
                             />
                             <span>#{tag}</span>
@@ -131,16 +131,16 @@ export function SidebarPanel({
                         <button
                           className="absolute right-2 top-1/2 -translate-y-1/2 opacity-80 hover:opacity-100 transition-opacity"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            e.preventDefault()
-                            setDeleteTarget(tag)
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setDeleteTarget(tag);
                           }}
                         >
                           <X className="h-4 w-4 text-red-500 hover:text-red-600" />
                         </button>
                       )}
                     </SidebarMenuItem>
-                  )
+                  );
                 })}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -153,21 +153,21 @@ export function SidebarPanel({
               <SidebarMenu>
                 <SidebarMenuItem>
                   {(() => {
-                    const key = 'settings'
-                    const isActive = activeKeys.includes(key)
+                    const key = "settings";
+                    const isActive = activeKeys.includes(key);
                     return (
                       <SidebarMenuButton
                         onClick={() => handleToggle(key)}
                         className={cn(
-                          'flex items-center gap-2 text-sm',
+                          "flex items-center gap-2 text-sm",
                           isActive &&
-                            'bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium'
+                            "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
                         )}
                       >
                         <Settings className="h-4 w-4" />
                         <span>Preferences</span>
                       </SidebarMenuButton>
-                    )
+                    );
                   })()}
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -177,22 +177,20 @@ export function SidebarPanel({
 
         {/* ---- Footer ---- */}
         <SidebarFooter className="border-t border-border p-3 mt-auto">
-          <div className="flex flex-col gap-2 text-xs text-sidebar-foreground/70">
-            <div className="flex justify-between items-center">
-              <span>
-                Weblink {new Date().getFullYear()} &nbsp;–&nbsp; {accountName}
-              </span>
-            </div>
+          <div className="flex gap-2 text-xs justify-between items-center text-sidebar-foreground/70">
+            <span>
+              Weblink {new Date().getFullYear()} &nbsp;–&nbsp; {accountName}
+            </span>
+
             <Button
               variant="ghost"
               size="sm"
               className={cn(
-                'flex items-center gap-2 text-xs text-red-500 hover:text-red-600 hover:bg-transparent px-0'
+                "flex items-center gap-2 text-xs text-red-500 hover:text-red-600 hover:bg-transparent px-0"
               )}
               onClick={onSignOut}
             >
               <LogOut className="h-4 w-4" />
-              Sign Out
             </Button>
           </div>
         </SidebarFooter>
@@ -227,5 +225,5 @@ export function SidebarPanel({
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
