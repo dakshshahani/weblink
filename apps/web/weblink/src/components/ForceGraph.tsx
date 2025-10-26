@@ -67,7 +67,14 @@ export default function ForceGraph({
       .join("circle")
       .attr("r", 8)
       .attr("fill", (d) => color(d.tag ?? "default") as string)
-      .attr("cursor", "pointer");
+      .attr("cursor", "pointer")
+      .call(
+        d3
+          .drag<SVGCircleElement, Node>()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended)
+      );
 
     const labelSel = gLabels
       .selectAll("text")
@@ -90,6 +97,30 @@ export default function ForceGraph({
       )
       .force("charge", d3.forceManyBody().strength(-250))
       .force("center", d3.forceCenter(width / 2, height / 2));
+    function dragstarted(event: any, d: Node) {
+      if (!event.active) sim.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(event: any, d: Node) {
+      d.fx = event.x;
+      d.fy = event.y;
+    }
+
+    function dragended(event: any, d: Node) {
+      if (!event.active) sim.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+
+    nodeSel.call(
+      d3
+        .drag<SVGCircleElement, Node>()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
+    );
 
     sim.on("tick", () => {
       linkSel
@@ -148,7 +179,9 @@ export default function ForceGraph({
     labelSel
       .transition()
       .duration(300)
-      .attr("opacity", (d) => (hasActive && !activeNodeIds.has(d.id) ? 0.2 : 1));
+      .attr("opacity", (d) =>
+        hasActive && !activeNodeIds.has(d.id) ? 0.2 : 1
+      );
   }, [filteredNodes, filteredLinks, selectedTags]);
 
   return (
