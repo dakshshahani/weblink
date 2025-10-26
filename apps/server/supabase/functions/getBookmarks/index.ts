@@ -68,7 +68,7 @@ serve(async (req) => {
     console.error("getBookmarks error:", err);
     return new Response(
       JSON.stringify({ error: err.message }),
-      { status: 500, headers }
+      { status: 500, header  s }
     );
   }
 });
