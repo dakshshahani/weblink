@@ -35,11 +35,11 @@ import { supabase } from "./supabaseClient"
 export async function getGraphData() {
   // 🌱 Temporary local mock data
   const nodes = [
-    { id: 1, name: 'Next.js' },
-    { id: 2, name: 'React' },
-    { id: 3, name: 'TypeScript' },
-    { id: 4, name: 'D3.js' },
-    { id: 5, name: 'Supabase' },
+    { id: 1, name: 'Next.js', tag: 'Framework' },
+    { id: 2, name: 'React', tag: 'Library' },
+    { id: 3, name: 'TypeScript', tag: 'Language' },
+    { id: 4, name: 'D3.js', tag: 'Library' },
+    { id: 5, name: 'Supabase', tag: 'Database' },
   ]
 
   const links = [
@@ -48,6 +48,8 @@ export async function getGraphData() {
     { source: 3, target: 4 },
     { source: 4, target: 5 },
     { source: 1, target: 5 },
+    { source: 1, target: 4 },
+    { source: 1, target: 3 },
   ]
 
   // Simulate async behavior (like Supabase)
