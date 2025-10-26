@@ -25,7 +25,6 @@ export async function getGraphData() {
 
   const data = await response.json();
   const bookmarks = data.bookmarks;
-  console.log("bookmarks:", bookmarks);
 
   // 3️⃣ Shape data for D3
   const nodes = bookmarks.map((b) => ({
@@ -46,14 +45,15 @@ export async function getGraphData() {
   );
 
   const dataLinks = await responseLinks.json();
-  console.log("dataLinks:", dataLinks);
   const bookmarkLinks = dataLinks.links;
 
-    const links = bookmarkLinks.map((l) => ({
-      source: l.source_bookmark_id,
-      target: l.target_bookmark_id,
-    }));
-//   const links = [];
+  const links = bookmarkLinks.map((l) => ({
+    source: l.source_bookmark_id,
+    target: l.target_bookmark_id,
+  }));
+  //   const links = [];
+  console.log("Nodes:", nodes);
+  console.log("Links:", links);
   return { nodes, links };
 }
 

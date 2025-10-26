@@ -13,7 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Tags, Settings, LogOut, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,12 +29,14 @@ import {
 const accountName = "daksh";
 
 export interface SidebarPanelProps {
+  availableTags?: string[]; // ✅ dynamically passed tags
   children?: React.ReactNode;
   onToggleChange?: (key: ToggleKey, active: boolean) => void;
   onSignOut?: () => void;
 }
 
 export function SidebarPanel({
+  availableTags = [],
   children,
   onToggleChange,
   onSignOut,
@@ -43,29 +44,23 @@ export function SidebarPanel({
   const [activeKeys, setActiveKeys] = React.useState<string[]>([]);
   const [hoveredTag, setHoveredTag] = React.useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<string | null>(null);
-  const [tags, setTags] = React.useState<string[]>([
-    "Work",
-    "Study",
-    "AI",
-    "Personal",
-    "Ideas",
-    "To‑Read",
-    "Framework",
-    "Library",
-    "Language",
-    "Database",
-  ]);
+  const [tags, setTags] = React.useState<string[]>(availableTags);
 
-  /** Toggle helper */
+  // keep tags in sync when availableTags changes from parent (e.g. after fetch)
+  React.useEffect(() => {
+    setTags(availableTags);
+  }, [availableTags]);
+
+  /** Toggle logic */
   const handleToggle = (key: string) => {
     setActiveKeys((prev) => {
       const isActive = prev.includes(key);
-      const newActive = isActive
+      const nextActive = isActive
         ? prev.filter((k) => k !== key)
         : [...prev, key];
 
       onToggleChange?.(key as ToggleKey, !isActive);
-      return newActive;
+      return nextActive;
     });
   };
 
@@ -87,61 +82,65 @@ export function SidebarPanel({
           <h2 className="p-3 font-bold text-lg">NodeBook</h2>
         </SidebarHeader>
 
-
-
         <SidebarContent>
           {/* ---- Tags ---- */}
           <SidebarGroup>
             <SidebarGroupLabel>Tags</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="mt-1">
-                {tags.map((tag) => {
-                  const isActive = activeKeys.includes(tag);
-                  return (
-                    <SidebarMenuItem
-                      key={tag}
-                      className="relative group"
-                      onMouseEnter={() => setHoveredTag(tag)}
-                      onMouseLeave={() => setHoveredTag(null)}
-                    >
-                      <SidebarMenuButton
-                        asChild
-                        onClick={() => handleToggle(tag)}
-                        className={cn(
-                          "pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors pr-8", // extra right padding for the cross
-                          isActive &&
-                            "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
-                        )}
+                {tags.length === 0 ? (
+                  <p className="text-sm text-muted-foreground p-2">
+                    No tags found
+                  </p>
+                ) : (
+                  tags.map((tag) => {
+                    const isActive = activeKeys.includes(tag);
+                    return (
+                      <SidebarMenuItem
+                        key={tag}
+                        className="relative group"
+                        onMouseEnter={() => setHoveredTag(tag)}
+                        onMouseLeave={() => setHoveredTag(null)}
                       >
-                        <a href={`#tag-${tag.toLowerCase()}`}>
-                          <div className="flex items-center gap-2">
-                            <Tags
-                              className={cn(
-                                "h-4 w-4 transition-opacity",
-                                isActive ? "opacity-100" : "opacity-60"
-                              )}
-                            />
-                            <span>#{tag}</span>
-                          </div>
-                        </a>
-                      </SidebarMenuButton>
-
-                      {/* ❌ Delete Icon on hover */}
-                      {hoveredTag === tag && (
-                        <button
-                          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-80 hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setDeleteTarget(tag);
-                          }}
+                        <SidebarMenuButton
+                          asChild
+                          onClick={() => handleToggle(tag)}
+                          className={cn(
+                            "pl-6 text-sm hover:bg-sidebar-accent/30 transition-colors pr-8",
+                            isActive &&
+                              "bg-sidebar-accent/60 text-sidebar-accent-foreground font-medium"
+                          )}
                         >
-                          <X className="h-4 w-4 text-red-500 hover:text-red-600" />
-                        </button>
-                      )}
-                    </SidebarMenuItem>
-                  );
-                })}
+                          <a href={`#tag-${tag.toLowerCase()}`}>
+                            <div className="flex items-center gap-2">
+                              <Tags
+                                className={cn(
+                                  "h-4 w-4 transition-opacity",
+                                  isActive ? "opacity-100" : "opacity-60"
+                                )}
+                              />
+                              <span>#{tag}</span>
+                            </div>
+                          </a>
+                        </SidebarMenuButton>
+
+                        {/* ❌ Delete Icon on hover */}
+                        {hoveredTag === tag && (
+                          <button
+                            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-80 hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setDeleteTarget(tag);
+                            }}
+                          >
+                            <X className="h-4 w-4 text-red-500 hover:text-red-600" />
+                          </button>
+                        )}
+                      </SidebarMenuItem>
+                    );
+                  })
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -178,7 +177,7 @@ export function SidebarPanel({
         {/* ---- Footer ---- */}
         <SidebarFooter className="p-3">
           <div className="flex text-xs items-center justify-between text-sidebar-foreground/70">
-            <span className="">
+            <span>
               Weblink {new Date().getFullYear()} &nbsp;–&nbsp; {accountName}
             </span>
             <Button
