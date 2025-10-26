@@ -114,15 +114,6 @@ export default function DashboardPage() {
         </div>
       );
     }
-
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Welcome to NodeBook</h1>
-        <p className="text-muted-foreground">
-          All your links, linked — start by selecting a tag or open settings.
-        </p>
-      </div>
-    );
   };
 
   return (
@@ -133,22 +124,19 @@ export default function DashboardPage() {
           onSignOut={handleSignOut}
         />
 
-        <div className="bg-green">
-          <div className="flex-1 flex bg-blue flex-col p-10 relative">
-            <div className="absolute top-4 left-4 z-50 border-radius-2">
-              <SidebarTrigger />
-            </div>
-
-            <div className="flex-1 flex flex-col">
-              {header()}
-
-              {/* Pass array of active tags to the graph */}
-              <ForceGraph
-                nodes={data.nodes}
-                links={data.links}
-                selectedTags={activeTags}
-              />
-            </div>
+        <div className="min-w-screen  rounded-3xl m-2">
+          <div className="flex gap-4 p-4 items-center ">
+            <SidebarTrigger className="bg-white" />
+            <h1 className="text-2xl font-bold ">Welcome to NodeBook</h1>
+          </div>
+          {header()}
+          <div className="flex-1 flex flex-col">
+            {/* Pass array of active tags to the graph */}
+            <ForceGraph
+              nodes={data.nodes}
+              links={data.links}
+              selectedTags={activeTags}
+            />
           </div>
         </div>
       </SidebarProvider>

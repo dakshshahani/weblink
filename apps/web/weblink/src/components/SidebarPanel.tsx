@@ -81,13 +81,13 @@ export function SidebarPanel({
 
   return (
     <>
-      <Sidebar>
+      <Sidebar className="border-none">
         {/* ---- Header ---- */}
         <SidebarHeader>
-          <h2 className="font-bold text-lg">NodeBook</h2>
+          <h2 className="p-3 font-bold text-lg">NodeBook</h2>
         </SidebarHeader>
 
-        <SidebarSeparator className="m-0" />
+
 
         <SidebarContent>
           {/* ---- Tags ---- */}
