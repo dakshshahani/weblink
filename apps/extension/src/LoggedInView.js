@@ -43,7 +43,7 @@ export default function LoggedInView() {
         <img
           src="/logo.png"
           alt="WebLink Logo"
-          className="w-9 h-9 mb-2 select-none" // ⬅️ added extra bottom margin
+          className="w-9 h-9 mb-2 select-none"
           draggable="false"
         />
 
@@ -58,7 +58,7 @@ export default function LoggedInView() {
 
         {/* === Bookmark + Tags === */}
         <div className="flex flex-col gap-2 w-[10.3rem] mx-auto">
-          {/* Bookmark button */}
+          {/* Bookmark Button */}
           <button className="flex items-center justify-between bg-white text-black text-[9px] font-medium rounded-md h-6 px-2 hover:bg-gray-200 transition">
             <span>Bookmark this page</span>
             <svg
@@ -110,6 +110,7 @@ export default function LoggedInView() {
                     : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
                 }`}
             >
+              {/* ✅ both checkboxes active now */}
               <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 rounded px-2 py-[2px]">
                 <input
                   type="checkbox"
@@ -120,10 +121,9 @@ export default function LoggedInView() {
                 <span>Status Bar</span>
               </label>
 
-              <label className="flex items-center gap-2 cursor-pointer text-gray-500 rounded px-2 py-[2px]">
+              <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 rounded px-2 py-[2px]">
                 <input
                   type="checkbox"
-                  disabled
                   className="accent-[#180B62] h-2.5 w-2.5"
                   checked={activityBar}
                   onChange={() => setActivityBar(!activityBar)}
