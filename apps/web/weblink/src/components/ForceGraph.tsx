@@ -84,9 +84,14 @@ export default function ForceGraph({ nodes, links, selectedTags }: Props) {
       .join("circle")
       .attr("r", 10)
       .attr("fill", "steelblue")
+      .on("click", (event, d) => {
+        if (d.url) {
+          window.open(d.url, "_blank");
+        }
+      })
       .call(
         d3
-          .drag<SVGCircleElement, Node>()
+          .drag<SVGCircleElement, Bookmark>()
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended) as unknown as any
