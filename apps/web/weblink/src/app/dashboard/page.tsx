@@ -104,9 +104,9 @@ export default function DashboardPage() {
 
     if (activeTags.length > 0) {
       return (
-          <p className="text-muted-foreground">
-             Active Tags: {activeTags.join(", ")}
-          </p>
+        <p className="text-muted-foreground">
+          Active Tags: {activeTags.join(", ")}
+        </p>
       );
     }
   };
@@ -120,11 +120,13 @@ export default function DashboardPage() {
         />
 
         <div className="min-w-screen  rounded-3xl m-2">
-          <div className="flex gap-4 p-4 items-center ">
+          <div className="flex gap-4 p-4  ">
             <SidebarTrigger className="bg-white" />
-            <h1 className="text-2xl font-bold ">Welcome to NodeBook</h1>
+            <div className="flex flex-col gap-2">
+              <h1 className="text-2xl font-bold ">Welcome to NodeBook</h1>
+              {header()}
+            </div>
           </div>
-          {header()}
           <div className="flex-1 flex flex-col">
             {/* Pass array of active tags to the graph */}
             <ForceGraph
