@@ -46,16 +46,6 @@ export default function LoggedInView() {
           className="w-9 h-9 mb-2 select-none"
           draggable="false"
         />
-
-        {/* Subtitle */}
-        <p className="text-[9px] text-gray-300 leading-snug max-w-[11rem] mb-2">
-          We’ve determined this page links with:
-        </p>
-
-        <span className="text-gray-100 font-medium text-[9px] mb-3">
-          Lorem, Ipsum, Kashish, Daksh
-        </span>
-
         {/* === Bookmark + Tags === */}
         <div className="flex flex-col gap-2 w-[10.3rem] mx-auto">
           {/* Bookmark Button */}
@@ -76,7 +66,14 @@ export default function LoggedInView() {
               <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
             </svg>
           </button>
+           {/* Subtitle */}
+        <p className="text-[9px] text-gray-300 leading-snug max-w-[11rem] mb-2">
+          We’ve determined this page links with:
+        </p>
 
+        <span className="text-gray-100 font-medium text-[9px] mb-3">
+          Lorem, Ipsum, Kashish, Daksh
+        </span>
           {/* Dropdown */}
           <div className="relative">
             <button
