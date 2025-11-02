@@ -109,50 +109,98 @@ export default function ForceGraph({
       .attr("dy", -12)
       .attr("text-anchor", "middle");
 
-    const sim = d3
-      .forceSimulation(allNodes)
-      .force(
-        "link",
-        d3
-          .forceLink<Node, Link>(allLinks)
-          .id((d: any) => d.id)
-          .distance(100)
-      )
-      .force("charge", d3.forceManyBody().strength(-250))
-      .force("center", d3.forceCenter(width / 2, height / 2));
+    // --- Neighbor map
+const neighbors = new Map<string, Set<string>>();
+allLinks.forEach((l) => {
+  if (!neighbors.has(l.source as string)) neighbors.set(l.source as string, new Set());
+  if (!neighbors.has(l.target as string)) neighbors.set(l.target as string, new Set());
+  neighbors.get(l.source as string)!.add(l.target as string);
+  neighbors.get(l.target as string)!.add(l.source as string);
+});
 
-    sim.on("tick", () => {
-      linkSel
-        .attr("x1", (d: any) => (d.source as Node).x!)
-        .attr("y1", (d: any) => (d.source as Node).y!)
-        .attr("x2", (d: any) => (d.target as Node).x!)
-        .attr("y2", (d: any) => (d.target as Node).y!);
-      nodeSel.attr("cx", (d) => d.x!).attr("cy", (d) => d.y!);
-      labelSel.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
-    });
+// --- Helper: keep nodes within bounds smoothly
+function applyBoundaryForce(nodes: Node[], width: number, height: number, strength = 0.1) {
+  const padding = 40;
+  nodes.forEach((d) => {
+    if (d.x! < padding) d.vx += (padding - d.x!) * strength;
+    if (d.x! > width - padding) d.vx += (width - padding - d.x!) * strength;
+    if (d.y! < padding) d.vy += (padding - d.y!) * strength;
+    if (d.y! > height - padding) d.vy += (height - padding - d.y!) * strength;
+  });
+}
 
-    // dragging
-    function dragstarted(event: any, d: Node) {
-      if (!event.active) sim.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
+const sim = d3
+  .forceSimulation(allNodes)
+  .force(
+    "link",
+    d3
+      .forceLink<Node, Link>(allLinks)
+      .id((d: any) => d.id)
+      .distance(100)
+      .strength(0.2)
+  )
+  .force("charge", d3.forceManyBody().strength(-200))
+  .force("center", d3.forceCenter(width / 2, height / 2))
+  .force("collide", d3.forceCollide(40))
+  .alphaDecay(0.05)
+  .velocityDecay(0.3);
+
+sim.on("tick", () => {
+  // apply boundary force every tick
+  applyBoundaryForce(allNodes, width, height, 0.2);
+
+  linkSel
+    .attr("x1", (d: any) => (d.source as Node).x!)
+    .attr("y1", (d: any) => (d.source as Node).y!)
+    .attr("x2", (d: any) => (d.target as Node).x!)
+    .attr("y2", (d: any) => (d.target as Node).y!);
+
+  nodeSel.attr("cx", (d) => d.x!).attr("cy", (d) => d.y!);
+  labelSel.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
+});
+
+// --- Localized + bounded drag behavior
+function dragstarted(event: any, d: Node) {
+  if (!event.active) sim.alphaTarget(0.2).restart();
+  const linkedIds = new Set([d.id, ...(neighbors.get(d.id) || [])]);
+  d.__linked = linkedIds;
+
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(event: any, d: Node) {
+  const padding = 30;
+
+  // Stay within viewport while dragging
+  d.fx = Math.max(padding, Math.min(width - padding, event.x));
+  d.fy = Math.max(padding, Math.min(height - padding, event.y));
+
+  const linkedIds = d.__linked as Set<string>;
+  allNodes.forEach((n) => {
+    if (linkedIds.has(n.id!) && n.id !== d.id) {
+      n.vx += (event.x - n.x!) * 0.03;
+      n.vy += (event.y - n.y!) * 0.03;
     }
-    function dragged(event: any, d: Node) {
-      d.fx = event.x;
-      d.fy = event.y;
-    }
-    function dragended(event: any, d: Node) {
-      if (!event.active) sim.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
-    nodeSel.call(
-      d3
-        .drag<SVGCircleElement, Node>()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended)
-    );
+  });
+
+  sim.alpha(0.1);
+}
+
+function dragended(event: any, d: Node) {
+  if (!event.active) sim.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+  delete d.__linked;
+}
+
+nodeSel.call(
+  d3
+    .drag<SVGCircleElement, Node>()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended)
+);
 
     selections.current = { nodeSel, linkSel, labelSel, sim };
 
