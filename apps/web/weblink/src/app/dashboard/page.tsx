@@ -27,6 +27,7 @@ type BookmarkTagRelation = {
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [activeToggles, setActiveToggles] = useState<Record<string, boolean>>(
     {}
@@ -169,16 +170,6 @@ export default function DashboardPage() {
 
   /* ------------------ HEADER DISPLAY ------------------ */
   const header = () => {
-    if (activeToggles["settings"]) {
-      return (
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Settings</h1>
-          <p className="text-muted-foreground">
-            Change your preferences or manage your account here.
-          </p>
-        </div>
-      );
-    }
 
     if (activeTags.length > 0) {
       return (
@@ -188,8 +179,11 @@ export default function DashboardPage() {
       );
     }
 
+
     return null;
   };
+
+
 
   /* ------------------ RENDER ------------------ */
   return (
@@ -202,16 +196,16 @@ export default function DashboardPage() {
           onSignOut={handleSignOut}
         />
 
-        <div className="min-w-screen rounded-3xl m-2">
+        <div className="bg-gray-200 overflow-hidden rounded-3xl w-full m-2">
           <div className="flex gap-4 p-4">
-            <SidebarTrigger className="bg-white" />
+            <SidebarTrigger onClick={() => setSidebarOpen(!sidebarOpen)} className="bg-white" />
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl font-bold">Welcome to NodeBook</h1>
               {header()}
             </div>
           </div>
 
-          <div className="flex flex-1 h-[93vh] w-[84vw] p-4">
+          <div className="p-4">
             <ForceGraph
               allNodes={graphData.nodes}
               allLinks={graphData.links}

@@ -254,7 +254,7 @@ export default function ForceGraph({
     <>
       <svg
         ref={ref}
-        className="w-full h-full block bg-white rounded-[1rem] shadow"
+        className="w-full h-screen overflow-hidden block bg-white rounded-[1rem] shadow"
       />
 
       {/* 🧭 Delete Confirmation Dialog */}
