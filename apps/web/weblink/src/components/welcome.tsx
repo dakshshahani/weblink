@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { handleGoogleOAuth } from "@/lib/supabaseAuth";
@@ -58,8 +58,8 @@ export default function Welcome() {
   useEffect(() => {
     const animateGradient = () => {
       setGradientPosition(prev => ({
-        x: prev.x + (mousePosition.x - prev.x) * 0.005, // Extremely slow easing
-        y: prev.y + (mousePosition.y - prev.y) * 0.005
+        x: prev.x + (mousePosition.x - prev.x) * 0.1, // Extremely slow easing
+        y: prev.y + (mousePosition.y - prev.y) * 0.1,
       }));
       animationRef.current = requestAnimationFrame(animateGradient);
     };
