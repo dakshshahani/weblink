@@ -1,57 +1,121 @@
-// apps/extension/server/supabase/functions/generateEmbedding/index.ts
-import { serve } from "https://deno.land/std@0.203.0/http/server.ts";
-import { supabase } from "../../../../utils/supabaseClient.ts";
-import { generateEmbedding } from "../../../../services/embeddings/generateEmbedding.ts";
+
+import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { v4 as uuidv4 } from "https://esm.sh/uuid@9.0.0";
+import { generateEmbedding } from "../../../services/embeddings/generateEmbedding.ts";
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
 
 serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  }
+
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
   try {
-    const { bookmark_id } = await req.json();
+    const body = await req.json();
+    const { bookmark_id, user_id, title, url, description } = body;
 
-    if (!bookmark_id) {
-      return new Response("Missing bookmark_id", { status: 400 });
+    if (!bookmark_id || !user_id || !title || !url) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers }
+      );
     }
 
-    // 1️⃣ Fetch bookmark text
-    const { data: bookmark, error: fetchErr } = await supabase
-      .from("bookmarks")
-      .select("content")
-      .eq("bookmark_id", bookmark_id)
-      .single();
+    console.log(`Generating embedding for bookmark: ${bookmark_id}`);
 
-    if (fetchErr || !bookmark?.content) {
-      console.error("Fetch error:", fetchErr);
-      return new Response("Bookmark not found or empty content", {
-        status: 404,
-      });
+    // Generate embedding from title + description + URL
+    const textToEmbed = `${title}. ${description || ""} ${url}`;
+    const vector = await generateEmbedding(textToEmbed);
+
+    // Find similar existing bookmarks before inserting the new one
+    const { data: existingEmbeddings, error: fetchError } = await supabase
+      .from("embeddings")
+      .select("bookmark_id, vector")
+      .neq("bookmark_id", bookmark_id);
+
+    if (fetchError) throw fetchError;
+
+    let similar: { bookmark_id: string; similarity: number }[] = [];
+
+    if (existingEmbeddings && existingEmbeddings.length > 0) {
+      // Run similarity manually using the SQL RPC
+      const { data: matches, error: simError } = await supabase.rpc(
+        "match_bookmarks",
+        {
+          query_embedding: vector,
+          match_threshold: 0.7,
+          match_count: 5,
+          user_id,
+        }
+      );
+      if (simError) throw simError;
+
+      similar = matches?.filter((m) => m.bookmark_id !== bookmark_id) || [];
     }
 
-    // 2️⃣ Generate embedding
-    const { vector, model_used, updated_at } = await generateEmbedding(
-      bookmark.content
-    );
-
-    // 3️⃣ Store embedding record
-    const { error: insertErr } = await supabase.from("embedding").insert([
+    // insert the embedding for this new bookmark
+    const { error: embedError } = await supabase.from("embeddings").insert([
       {
         bookmark_id,
         vector,
-        model_used,
-        updated_at,
+        model_used: "text-embedding-3-small",
+        updated_at: new Date().toISOString(),
       },
     ]);
+    if (embedError) throw embedError;
 
-    if (insertErr) {
-      console.error("Insert error:", insertErr);
-      return new Response("Failed to insert embedding", { status: 500 });
+    //Link this bookmark to previously existing similar ones
+    if (similar.length > 0) {
+      const links = similar.map((sim) => ({
+        link_id: uuidv4(),
+        source_bookmark_id: bookmark_id,
+        target_bookmark_id: sim.bookmark_id,
+        relevance_score: sim.similarity,
+        user_id,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error: linkError } = await supabase
+        .from("bookmark_links")
+        .insert(links);
+
+      if (linkError) throw linkError;
+      console.log(`Linked ${links.length} related bookmarks`);
+    } else {
+      console.log("No related bookmarks found");
     }
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Embedding generated & linked to similar bookmarks",
+        related_count: similar.length,
+      }),
+      { headers, status: 200 }
+    );
   } catch (err) {
-    console.error("Unhandled error:", err);
-    return new Response("Internal server error", { status: 500 });
+    console.error("Embedding Function Error:", err);
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers,
+    });
   }
 });
-d
+
+
