@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { handleGoogleOAuth } from "@/lib/supabaseAuth";
@@ -25,6 +25,11 @@ export default function Welcome() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Mouse tracking for gradient animation
+  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const [gradientPosition, setGradientPosition] = useState({ x: 50, y: 50 });
+  const animationRef = useRef<number | null>(null);
+
   // Validation checks
   const passwordsMatch =
     confirmPassword.length === 0 || password === confirmPassword;
@@ -36,8 +41,45 @@ export default function Welcome() {
     confirmPassword.trim() !== "" &&
     passwordsMatch;
 
+  // Mouse tracking effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Map mouse to a smaller range around center (40-60%) for subtlety
+      const x = 50 + ((e.clientX / window.innerWidth - 0.5) * 20);
+      const y = 50 + ((e.clientY / window.innerHeight - 0.5) * 20);
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Smooth gradient animation effect
+  useEffect(() => {
+    const animateGradient = () => {
+      setGradientPosition(prev => ({
+        x: prev.x + (mousePosition.x - prev.x) * 0.1, // Extremely slow easing
+        y: prev.y + (mousePosition.y - prev.y) * 0.1,
+      }));
+      animationRef.current = requestAnimationFrame(animateGradient);
+    };
+
+    animationRef.current = requestAnimationFrame(animateGradient);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [mousePosition]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-white">
+    <div 
+      className="flex flex-col items-center justify-center min-h-screen text-white transition-all duration-2000 ease-out"
+      style={{
+        background: `radial-gradient(400% 400% at ${gradientPosition.x}% ${gradientPosition.y}%, #AD6B32 0%, #180E57 16.48%, #161340 24.88%, #100D25 35%, #000 100%)`
+      }}
+    >
       <Image
         src="/logo.png"
         alt="Logo"
