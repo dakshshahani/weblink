@@ -1,47 +1,33 @@
-import { createClient } from "@supabase/supabase-js";
-
-// Initialize Supabase client
-const supabase = createClient(
-  "https://wzzlkcfytxzccrcyavju.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6emxrY2Z5dHh6Y2NyY3lhdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzNDY4MjMsImV4cCI6MjA3NjkyMjgyM30.LVXzxQF5DzXXWn-zpLphl2v_83WtcT3fyMrv--KT1LY",
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      storage: {
-        getItem: async (key) => {
-          const data = await chrome.storage.local.get(key);
-          return data[key];
-        },
-        setItem: async (key, value) => {
-          await chrome.storage.local.set({ [key]: value });
-        },
-        removeItem: async (key) => {
-          await chrome.storage.local.remove(key);
-        },
-      },
-    },
-  }
-);
-
-// Start listening for updates
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (session) {
-    await chrome.storage.local.set({ supabaseSession: session });
-  } else {
-    await chrome.storage.local.remove("supabaseSession");
-  }
-});
-
-// 🧠 Keep session auto-refresh active
-supabase.auth.startAutoRefresh();
+// Background worker for Google OAuth authentication
+// Handles user session management and token storage
 
 // Handle popup requests
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.type === "getSession") {
-    chrome.storage.local.get("supabaseSession", (data) => {
-      sendResponse({ session: data.supabaseSession || null });
+  if (msg.type === "getUser") {
+    chrome.storage.local.get("googleUser", (data) => {
+      sendResponse({ user: data.googleUser || null });
     });
     return true; // keep message channel open for async sendResponse
+  }
+
+  if (msg.type === "userUpdate" && msg.user) {
+    // Explicitly update user when popup notifies us
+    chrome.storage.local.set({ googleUser: msg.user });
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (msg.type === "logout") {
+    // Clear user data on logout
+    chrome.storage.local.remove("googleUser");
+    sendResponse({ success: true });
+    return true;
+  }
+});
+
+// Listen for storage changes to sync across extension contexts
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "local" && changes.googleUser) {
+    console.log("User data updated in storage");
   }
 });

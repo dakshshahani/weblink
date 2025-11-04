@@ -3,10 +3,10 @@
   "name": "WebLink",
   "version": "1.0",
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "js/index.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "js/background.js"
   },
   "permissions": ["storage", "identity"],
   "host_permissions": [
